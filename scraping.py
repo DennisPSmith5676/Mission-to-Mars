@@ -93,3 +93,6 @@ def mars_facts():
     # Assign columns and set index of dataframe
     df.columns=['Description', 'Mars', 'Earth']
     df.set_index('Description', inplace=True)
+    
+    return df.to_html(classes="table table-striped")
+
