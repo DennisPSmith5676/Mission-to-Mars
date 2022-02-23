@@ -19,6 +19,7 @@ def scrape_all():
         "news_paragraph": news_paragraph,
         "featured_image": featured_image(browser),
         "facts": mars_facts(),
+        "hemisphere":hemispheres(browser),
         "last_modified": dt.datetime.now()
     }
 
@@ -31,7 +32,7 @@ def mars_news(browser):
 
     # Scrape Mars News
     # Visit the mars nasa news site
-    url = 'https://data-class-mars.s3.amazonaws.com/Mars/index.html'
+    url = 'https://redplanetscience.com/'
     browser.visit(url)
 
     # Optional delay for loading the page
@@ -93,6 +94,59 @@ def mars_facts():
     # Assign columns and set index of dataframe
     df.columns=['Description', 'Mars', 'Earth']
     df.set_index('Description', inplace=True)
-    
-    return df.to_html(classes="table table-striped")
 
+    # Convert dataframe into HTML format, add bootstrap
+    return df.to_html(classes="table table-striped")
+    
+    
+    
+# Hemisphere funtion
+def hemispheres(browser):
+	#1, use the browser to visit the URL
+    url = 'https://marshemispheres.com/'
+    browser.visit(url)
+    
+    # # Optional delay for loading the page
+    # browser.is_element_present_by_css("ul li", wait_time=1)
+
+    #2 Create list to hold the url and title list of dicts.
+    hemisphere_image_urls = []
+    #3 write the code to retrive url and tiltles for the hemispheres
+    links = browser.find_by_css('a.product-item img')
+                
+    for i in range(4):
+	    #create empty dictionary
+        hemispheres = {}
+        browser.find_by_css('a.product-item h3')[i].click()
+        element = browser.find_link_by_text('Sample').first
+        img_url = element['href']
+        title = browser.find_by_css("h2.title").text
+        hemispheres["img_url"] = img_url
+        hemispheres["title"] = title
+        hemisphere_image_urls.append(hemispheres)
+        browser.back()
+    return hemisphere_image_urls
+
+
+if __name__ == "__main__":
+	
+    # If running as script, print scraped data
+    print(scrape_all())
+
+    
+    # for i in range(4):
+    #     # create an empty dictionary to store images and thitles for the Hemispheres
+    #     hemisphere = {}
+    #     # find img and click thru to next paage
+    #     browser.find_by_css('a.product-item img')[i].click()
+    #     # find sample image extract
+    #     sample_elem = browser.links.find_by_text('Sample').first
+    #     hemisphere['img_url'] = sample_elem['href']
+        
+    #     hemisphere['title'] = browser.find_by_css('h2.title').text
+
+    #     # append list with dictionary
+    #     hemisphere_image_urls.append(hemisphere)
+
+    #     #need to navigatwe back to the start page
+    #     browser.back()
